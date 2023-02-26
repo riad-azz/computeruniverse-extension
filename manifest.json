@@ -18,6 +18,9 @@
     "default_popup": "popup/popup.html",
     "default_title": "Lazy To Click"
   },
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.computeruniverse.net/*"],
@@ -30,5 +33,6 @@
       "matches": ["https://www.computeruniverse.net/*"],
       "resources": ["scripts/content.js"]
     }
-  ]
+  ],
+  "permissions": ["storage", "tabs"]
 }
