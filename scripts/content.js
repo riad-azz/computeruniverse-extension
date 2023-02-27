@@ -132,9 +132,10 @@ async function runApp() {
   selectedCountryName = await getSelectedCountryName();
   // Check if a item page or a item list page
   const currentUrl = window.location.href;
-  if (currentUrl.split('/').at(-2) === 'p') {
+  const pageType = currentUrl.split('/').at(-2);
+  if (pageType === 'p') {
     handleItemPage(currentUrl);
-  } else {
+  } else if (pageType === 'c') {
     handleItemListPage();
   }
 
