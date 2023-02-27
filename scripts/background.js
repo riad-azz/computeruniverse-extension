@@ -1,13 +1,13 @@
 // -------- Handle local storage --------
 const loadSaved = async () => {
-  const value = chrome.storage.local.get(["countryCode", "countryName"], function (result) {
-    console.log(`Country code saved value is : ${result.myValue}. (background.js)`);
+  chrome.storage.local.get(["countryCode", "countryName"], function (result) {
+    console.log(`Country code saved value is : ${result.countryCode}. (background.js)`);
+    if (!result.countryCode) {
+      chrome.storage.local.set({ countryCode: 'DZ', countryName: 'Algeria' }, function () {
+        console.log("Country code was defaulted to DZ. (background.js)");
+      });
+    }
   });
-  if (!value) {
-    chrome.storage.local.set({ countryCode: 'DZ', countryName: 'Algeria' }, function () {
-      console.log("Country code was defaulted to DZ. (background.js)");
-    });
-  }
 }
 
 // -------- Handle page change --------
