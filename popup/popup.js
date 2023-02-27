@@ -252,8 +252,8 @@ const COUNTRIES = {
 };
 
 // -------- APP VARS --------
-let countryCodeSelect;
-let selectedCountry;
+let countrySelect;
+let selectedCountryCode;
 
 // -------- UTILS --------
 const getCurrentTabId = async () => {
@@ -266,21 +266,19 @@ const getCurrentTabId = async () => {
   }
 }
 
-const updateCountryCode = async (countryCode) => {
+const updateCountryCode = async (countryCode, countryName) => {
   const currentTab = await getCurrentTabId();
   if (!currentTab) return;
   const message = {
     title: 'update-country',
     tabId: currentTab,
     code: countryCode,
+    name: countryName,
   }
-  chrome.runtime.sendMessage(message, function (response) {
-    if (!response) return;
-    console.log(`${response.content}. (popup.js)`);
-  });
+  chrome.runtime.sendMessage(message);
 }
 
-const getSelectedCountry = async () => {
+const getSelectedCountryCode = async () => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['countryCode'], function (result) {
       if (chrome.runtime.lastError) {
@@ -294,27 +292,28 @@ const getSelectedCountry = async () => {
 
 const loadCountries = () => {
   // Get the country select element
-  countryCodeSelect = document.getElementById("country-code");
+  countrySelect = document.getElementById("country-code");
   // Load all the countries as options
   for (key in COUNTRIES) {
     const optionElement = document.createElement('option');
-    if (key === selectedCountry) {
+    if (key === selectedCountryCode) {
       optionElement.selected = true;
     }
     optionElement.value = key;
     optionElement.textContent = COUNTRIES[key];
-    countryCodeSelect.appendChild(optionElement);
+    countrySelect.appendChild(optionElement);
   };
   // Listen for country change and notify background script
-  countryCodeSelect.addEventListener("change", function () {
-    const countryCode = countryCodeSelect.value;
-    updateCountryCode(countryCode);
+  countrySelect.addEventListener("change", function () {
+    const countryCode = countrySelect.value;
+    const countryName = countrySelect.options[countrySelect.selectedIndex].text;
+    updateCountryCode(countryCode, countryName);
   });
 }
 
 async function runApp() {
   // Get saved country code from local storage
-  selectedCountry = await getSelectedCountry();
+  selectedCountryCode = await getSelectedCountryCode();
   // Render the countries select
   loadCountries();
 }
