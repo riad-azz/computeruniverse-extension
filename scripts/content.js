@@ -3,6 +3,7 @@ const DEBUG = false;
 // -------- APP VARS --------
 let selectedCountryCode;
 let selectedCountryName;
+let currentUrl = document.location.href;
 // -------- Constant vars --------
 const firstItemSelector = '.c-pl__main--rows > .ais-Hits > .ais-Hits-list > .ais-Hits-item';
 const itemSelector = '.ais-Hits-item';
@@ -119,7 +120,21 @@ const showItemShippingPrice = async (element, shippingPrice) => {
   containerElement.appendChild(totalPriceElement);
 }
 
-const handleItemsList = async (itemsContainer) => {
+const itemListPageRefresher = () => {
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(function () {
+      const linksExist = document.querySelector(linkSelector);
+      if (linksExist) {
+        handleItemListPage();
+        clearInterval(interval);
+        resolve(true);
+      }
+    }, 500);
+  });
+
+}
+
+const showListShippingPrice = async (itemsContainer) => {
   // Get all items
   const itemList = itemsContainer.querySelectorAll(itemSelector);
   for await (item of itemList) {
@@ -134,7 +149,9 @@ const handleItemListPage = async () => {
   // Get the items container element
   const itemsContainer = await waitForProductsList(firstItemSelector);
   // Handle showing the shipping price for each item
-  handleItemsList(itemsContainer);
+  showListShippingPrice(itemsContainer);
+  // Refresh prices if items were mutated
+  itemListPageRefresher();
 }
 
 const handleItemPage = async (pageUrl) => {
