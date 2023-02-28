@@ -120,18 +120,19 @@ const showItemShippingPrice = async (element, shippingPrice) => {
   containerElement.appendChild(totalPriceElement);
 }
 
-const itemListPageRefresher = () => {
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(function () {
-      const linksExist = document.querySelector(linkSelector);
-      if (linksExist) {
-        handleItemListPage();
-        clearInterval(interval);
-        resolve(true);
-      }
-    }, 500);
+const itemListPageObserver = () => {
+  // Create an observer instance
+  const observer = new MutationObserver((mutationsList, observer) => {
+    const linksExist = document.querySelector(linkSelector);
+    if (linksExist) {
+      console.log("fuck off mate");
+      handleItemListPage();
+      return;
+    }
   });
 
+  // Start observing the target node for configured mutations
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 const showListShippingPrice = async (itemsContainer) => {
@@ -150,8 +151,6 @@ const handleItemListPage = async () => {
   const itemsContainer = await waitForProductsList(firstItemSelector);
   // Handle showing the shipping price for each item
   showListShippingPrice(itemsContainer);
-  // Refresh prices if items were mutated
-  itemListPageRefresher();
 }
 
 const handleItemPage = async (pageUrl) => {
@@ -173,7 +172,8 @@ async function runApp() {
   if (pageType === 'p') {
     handleItemPage(currentUrl);
   } else {
-    handleItemListPage();
+    // Show the shipping prices whenver elements are mutated
+    itemListPageObserver();
   }
 
 }
