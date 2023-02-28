@@ -7,6 +7,9 @@ let selectedCountryName;
 const firstItemSelector = '.c-pl__main--rows > .ais-Hits > .ais-Hits-list > .ais-Hits-item';
 const itemSelector = '.ais-Hits-item';
 const linkSelector = '.showShippingInfo';
+const priceParentContainerSelector = ".price-box__current-price";
+const priceContainerSelector = ".price";
+const priceSelector = "span";
 
 // -------- Utils --------
 const waitForProductsList = async (selector) => {
@@ -72,7 +75,6 @@ const getSelectedCountryName = async () => {
   });
 }
 
-
 const getShippingPrice = async (id, countryCode) => {
   const shippingPriceUrl = `https://webapi.computeruniverse.net/api/products/${id}/shippingcached?shippingCountryIsoCode=${countryCode}&showTax=true`;
   const response = await fetch(shippingPriceUrl);
@@ -80,7 +82,18 @@ const getShippingPrice = async (id, countryCode) => {
   return data.Value;
 }
 
-const showItemShippingPrice = async (element, price) => {
+const getTotalPrice = async (element, shippingPrice) => {
+  const parentContainer = element.querySelector(priceParentContainerSelector);
+  const priceContainer = parentContainer.querySelector(priceContainerSelector);
+  const priceElement = priceContainer.querySelector(priceSelector);
+  const priceText = priceElement.innerText.replace(".", "").replace(",", ".");
+  const price = parseFloat(priceText);
+  let totalPrice = price + shippingPrice;
+  totalPrice = totalPrice.toFixed(2);
+  return totalPrice;
+}
+
+const showItemShippingPrice = async (element, shippingPrice) => {
   const linkElement = await waitForLinkElement(element);
   const btnElement = linkElement.parentElement;
   const containerElement = btnElement.parentElement;
@@ -89,14 +102,21 @@ const showItemShippingPrice = async (element, price) => {
   btnElement.remove();
   // add a new element to hold the shipping price
   let message;
-  if (price) {
-    message = `Shipping cost to ${selectedCountryName} is ${price}€`;
+  let totalPrice;
+  if (shippingPrice) {
+    message = `Shipping cost to ${selectedCountryName} ${shippingPrice} €`;
+    totalPrice = await getTotalPrice(element, shippingPrice);
   } else {
     message = `There is no shipping to ${selectedCountryName}`;
   }
-  const priceElement = document.createElement('option');
-  priceElement.textContent = message;
-  containerElement.appendChild(priceElement);
+  const shippingPriceElement = document.createElement('div');
+  const totalPriceElement = document.createElement('div');
+  shippingPriceElement.textContent = message;
+  containerElement.appendChild(shippingPriceElement);
+  if (!totalPrice) return;
+  containerElement.parentElement.style.display = "block";
+  totalPriceElement.textContent = `Total price ${totalPrice} €`;
+  containerElement.appendChild(totalPriceElement);
 }
 
 const handleItemsList = async (itemsContainer) => {
