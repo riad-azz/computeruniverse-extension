@@ -6,19 +6,19 @@ Simple google chrome extension to reveal shipping prices for the website [comput
 
 ### Extension preview
 
-- Extension UI
+* #### Extension UI
 
 ![Extension preview image](screenshots/sc-1.png)
 
-- Before the extension
+* #### Before the extension
 
 ![Extension preview image](screenshots/sc-2.png)
 
-- After the extension
+* #### After the extension
 
 ![Extension preview image](screenshots/sc-3.png)
 
-- Countries with no shipping
+* #### Countries with no shipping
 
 ![Extension preview image](screenshots/sc-4.png)
 
