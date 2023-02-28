@@ -24,7 +24,7 @@ const waitForProductsList = async (selector) => {
         clearInterval(interval);
         resolve(productsList);
       }
-    }, 50);
+    }, 100);
   });
 }
 
@@ -135,12 +135,11 @@ async function runApp() {
   const pageType = currentUrl.split('/').at(-2);
   if (pageType === 'p') {
     handleItemPage(currentUrl);
-  } else if (pageType === 'c') {
+  } else {
     handleItemListPage();
   }
 
 }
-
 
 // Execute after the document is loaded
 window.onload = function () {
