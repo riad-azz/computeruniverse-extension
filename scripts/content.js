@@ -125,7 +125,6 @@ const itemListPageObserver = () => {
   const observer = new MutationObserver((mutationsList, observer) => {
     const linksExist = document.querySelector(linkSelector);
     if (linksExist) {
-      console.log("fuck off mate");
       handleItemListPage();
       return;
     }
